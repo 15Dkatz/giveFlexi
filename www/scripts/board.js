@@ -4,44 +4,53 @@ myApp.controller('BoardController', ['$scope', '$rootScope', 'Authentication', '
     var auth = $firebaseAuth(ref);
 
     // $scope.test = "30$ from Zoe";
-    $scope.giveList = sharedExercises.getGiveList();
-    $scope.getList = sharedExercises.getGetList();
+    $scope.giveList = [];
+    $scope.getList = [];
 
 
-
-    // $scope.loadFeeds = function() {
-
-    //     $scope.giveList = sharedExercises.getGiveList();
-    //     $scope.getList = sharedExercises.getGetList();
-
-    //     console.log("will attempt updateLists through loadFeeds");
+    // auth.$onAuth(function(authUser) {
     //     updateLists();
-    // }
-
-
-    auth.$onAuth(function(authUser) {
-        updateLists();
-    });
+    // });
 
 
 
     var updateLists = function() {
         setTimeout(function() {
-            var giveList = sharedExercises.getGiveList();
-            $scope.giveList = giveList;
-
-            var getList = sharedExercises.getGetList();
-            $scope.getList = getList;
+            // var giveList = sharedExercises.getGiveList();
+            // $scope.giveList = giveList;
+            updateGiveList();
+            // var getList = sharedExercises.getGetList();
+            // $scope.getList = getList;
+            updateGetList();
         }, 600);
-        // setTimeout(function() {
-        //     var giveList = sharedExercises.getGiveList();
-        //     $scope.giveList = giveList;
-
-        //     var getList = sharedExercises.getGetList();
-        //     $scope.getList = getList;
-        // }, 300);
+        setTimeout(function() {
+            // var giveList = sharedExercises.getGiveList();
+            // $scope.giveList = giveList;
+            updateGiveList();
+            // var getList = sharedExercises.getGetList();
+            // $scope.getList = getList;
+            updateGetList();
+        }, 1000);
     }
 
+    $scope.updateGiveList = function() {
+        var giveList = sharedExercises.getGiveList();
+        $scope.giveList = giveList;
+        return giveList;
+    }
+
+    $scope.updateGetList = function() {
+        var getList = sharedExercises.getGetList();
+        $scope.getList = getList;
+        // check a console log.
+        console.log("getList from updateGetList", getList);
+        return getList;
+
+    }
+    // need to fix these.
+
+    // create an updateGiveList that returns the giveList for angular front-end updating
+    // as well as for a getList
 
     $scope.addPost = function(list) {
         // popup template for new Exercise
@@ -60,17 +69,24 @@ myApp.controller('BoardController', ['$scope', '$rootScope', 'Authentication', '
               if (!$scope.newPost) {
                 e.preventDefault();
               } else {
-                $scope.newPost.firstName = sharedExercises.getFirstname();
-                $scope.newPost.lastName = sharedExercises.getLastname();
+                $scope.newPost.firstName = "anonymous";
+                $scope.newPost.lastName = "post";
+                if (sharedExercises.getFirstname()) {
+                    $scope.newPost.firstName = sharedExercises.getFirstname();
+                    $scope.newPost.lastName = sharedExercises.getLastname();
+                };
+                
                 if (list === 'give') {
                     var newGiveList = sharedExercises.getGiveList();
                     newGiveList.push($scope.newPost);
-                    sharedExercises.setGiveList(newGiveList);   
+                    sharedExercises.setGiveList(newGiveList); 
+                    $scope.newGiveList = newGiveList;  
                 }
                 else if (list === 'get') {
                     var newGetList = sharedExercises.getGetList();
                     newGetList.push($scope.newPost);
                     sharedExercises.setGetList(newGetList);
+                    $scope.getList = newGetList;
                 }
                 console.log("adding post", list);
               }
